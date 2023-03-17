@@ -237,3 +237,17 @@ if __name__ == "__main__":
         )
     else:
         raise ValueError(f"framework not supported: {args.framework}")
+
+# function to mosaic all s2 data
+def mosaicByDate(imgCol):
+  imlist = imgCol.toList(imgCol.size())
+  unique_dates = imlist.map(lambda im: ee.Image(im).date().format("YYYY-MM-dd")).distinct()
+  
+  def mosaic_image(d):
+    d = ee.Date(d)
+    im = imgCol.filterDate(d, d.advance(1, "day")).mosaic()
+    return im.set("system:time_start", d.millis(), "system:id", d.format("YYYY-MM-dd"))
+  
+  mosaic_imlist = unique_dates.map(mosaic_image)
+  return ee.ImageCollection(mosaic_imlist)
+  
