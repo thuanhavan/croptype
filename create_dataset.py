@@ -334,6 +334,8 @@ def mosaicByDate1(imgCol):
   return ee.ImageCollection(mosaic_imlist)
   
   
+  
+from datetime import datetime
 def label_mask(start_date, end_date, roi):
   date_string = start_date # replace with your date string
   date_obj = datetime.strptime(date_string, "%Y-%m-%d")
