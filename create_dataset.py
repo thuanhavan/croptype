@@ -320,9 +320,8 @@ def cloud_mask(img):
     return img_cloud_shadow.addBands(is_cld_shdw2)
     
     
-  
 # function to mosaic all s2 data
-def mosaicByDate(imgCol):
+def mosaicByDate1(imgCol):
   imlist = imgCol.toList(imgCol.size())
   unique_dates = imlist.map(lambda im: ee.Image(im).date().format("YYYY-MM-dd")).distinct()
   
@@ -333,4 +332,3 @@ def mosaicByDate(imgCol):
   
   mosaic_imlist = unique_dates.map(mosaic_image)
   return ee.ImageCollection(mosaic_imlist)
-  
