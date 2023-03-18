@@ -332,3 +332,14 @@ def mosaicByDate1(imgCol):
   
   mosaic_imlist = unique_dates.map(mosaic_image)
   return ee.ImageCollection(mosaic_imlist)
+  
+  
+def label_mask(start_date, end_date, roi):
+  date_string = start_date # replace with your date string
+  date_obj = datetime.strptime(date_string, "%Y-%m-%d")
+  year = ee.String(str(date_obj.year))
+  crop = ee.ImageCollection('AAFC/ACI').filterDate(start_date, end_date)
+  mask = crop.map(lambda image: image.expression("b('landcover') == 153 || b('landcover') == 133"))
+  mask = ee.Image(mask.first())
+  maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi).rename('landcover_'+year.getInfo()))
+  return maskedImage
