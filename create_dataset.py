@@ -345,3 +345,18 @@ def label_mask(start_date, end_date, roi):
   mask = ee.Image(mask.first())
   maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi).rename('landcover_'+year.getInfo()))
   return maskedImage
+  
+def ndvi_collection(imageCollection, start_month, end_month):
+    # Define the months to create composites for
+    months = ee.List.sequence(start_month, end_month)
+
+    # Create composites for each month using median reducer
+    composites = ee.ImageCollection.fromImages(
+        months.map(lambda m: imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
+                                     .median()
+                                     .addBands(imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
+                                     .median().normalizedDifference(['B8', 'B4']).rename('ndvi').set('month', m))
+                  )
+    )
+
+    return composites.select('B2','B3','B4','ndvi')
