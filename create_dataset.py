@@ -355,7 +355,7 @@ def ndvi_collection(imageCollection, start_month, end_month):
         months.map(lambda m: imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
                                      .median()
                                      .addBands(imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
-                                     .median().normalizedDifference(['B8', 'B4']).rename('ndvi').set('month', m))
+                                     .median().normalizedDifference(['B8', 'B4']).multiply(1000).rename('ndvi').set('month', m))
                   )
     )
 
