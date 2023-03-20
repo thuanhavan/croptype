@@ -341,7 +341,7 @@ def label_mask(start_date, end_date, roi):
   date_obj = datetime.strptime(date_string, "%Y-%m-%d")
   year = ee.String(str(date_obj.year))
   crop = ee.ImageCollection('AAFC/ACI').filterDate(start_date, end_date)
-  mask = crop.map(lambda image: image.expression("b('landcover') == 153 || b('landcover') == 133"))
+  mask = crop.map(lambda image: image.expression("b('landcover') == 153 || b('landcover') == 133 || b('landcover') == 146 "))
   mask = ee.Image(mask.first())
   maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi).rename('landcover_'+year.getInfo()))
   return maskedImage
