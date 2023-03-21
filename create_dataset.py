@@ -343,7 +343,7 @@ def label_mask(start_date, end_date, roi):
   crop = ee.ImageCollection('AAFC/ACI').filterDate(start_date, end_date)
   mask = crop.map(lambda image: image.expression("b('landcover') == 153 || b('landcover') == 133 || b('landcover') == 146 "))
   mask = ee.Image(mask.first())
-  maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi).rename('landcover_'+year.getInfo()))
+  maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi)#.rename('landcover_'+year.getInfo()))
   return maskedImage
   
 def ndvi_collection(imageCollection, start_month, end_month):
@@ -353,9 +353,9 @@ def ndvi_collection(imageCollection, start_month, end_month):
     # Create composites for each month using median reducer
     composites = ee.ImageCollection.fromImages(
         months.map(lambda m: imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
-                                     .median()
+                                     .median().divide(10000)
                                      .addBands(imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
-                                     .median().normalizedDifference(['B8', 'B4']).multiply(1000).rename('ndvi').set('month', m))
+                                     .median().normalizedDifference(['B8', 'B4']).clamp(0,1).rename('ndvi').set('month', m))
                   )
     )
 
