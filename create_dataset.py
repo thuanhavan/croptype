@@ -353,14 +353,16 @@ def ndvi_collection(imageCollection, start_month, end_month):
     # Create composites for each month using median reducer
     composites = ee.ImageCollection.fromImages(
         months.map(lambda m: imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
-                                     .median().divide(10000)
+                                     .median()
                                      .addBands(imageCollection.filter(ee.Filter.calendarRange(m, m, 'month'))
                                      .median().normalizedDifference(['B8', 'B4']).clamp(0,1).rename('ndvi').set('month', m))
                   )
     )
 
     return composites.select('B2','B3','B4','ndvi')
-    
+
+
+ 
 def landcover_remap(img) -> ee.Image:
     fromValues = [153,146,133]
     toValues = [1,2,3]
