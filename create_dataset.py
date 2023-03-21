@@ -343,7 +343,7 @@ def label_mask(start_date, end_date, roi):
   crop = ee.ImageCollection('AAFC/ACI').filterDate(start_date, end_date)
   mask = crop.map(lambda image: image.expression("b('landcover') == 153 || b('landcover') == 133 || b('landcover') == 146 "))
   mask = ee.Image(mask.first())
-  maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi)#.rename('landcover_'+year.getInfo()))
+  maskedImage = crop.map(lambda image: image.mask(mask).unmask().clip(roi).rename('landcover_'+year.getInfo()))
   return maskedImage
   
 def ndvi_collection(imageCollection, start_month, end_month):
@@ -360,3 +360,13 @@ def ndvi_collection(imageCollection, start_month, end_month):
     )
 
     return composites.select('B2','B3','B4','ndvi')
+    
+def landcover_remap(img) -> ee.Image:
+    fromValues = [153,146,133]
+    toValues = [1,2,3]
+    return (img.first().remap(fromValues, toValues)\
+        .rename(OUTPUT_BANDS))    
+    
+#git add .  
+#git commit -m 'message' 
+#get push -f origin main
